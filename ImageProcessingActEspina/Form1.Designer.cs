@@ -156,6 +156,7 @@
             this.option1ToolStripMenuItem.Name = "option1ToolStripMenuItem";
             this.option1ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.option1ToolStripMenuItem.Text = "NORMAL MODE";
+            this.option1ToolStripMenuItem.Click += new System.EventHandler(this.option1ToolStripMenuItem_Click);
             // 
             // option2ToolStripMenuItem
             // 

@@ -16,6 +16,8 @@ namespace ImageProcessingActEspina
     {
 
         private Bitmap image1, image2, image3;
+        private bool isNormal = false;
+
         public Form1()
         {
             InitializeComponent();
@@ -33,6 +35,13 @@ namespace ImageProcessingActEspina
 
         private void button3_Click(object sender, EventArgs e)
         {
+            if (isNormal == false)
+            {
+                MessageBox.Show("PLEASE SELECT A MODE FIRST!");
+                return;
+
+            }
+
             if (pictureBox1.Image != null && image1 != null)
             {
                 image2 = new Bitmap(image1.Width, image1.Height);
@@ -64,6 +73,13 @@ namespace ImageProcessingActEspina
 
         private void button4_Click(object sender, EventArgs e)
         {
+            if(isNormal == false)
+            {
+                MessageBox.Show("PLEASE SELECT A MODE FIRST!");
+                return;
+              
+            }
+
             if (pictureBox1.Image != null && image1 != null)
             {
                 image2 = new Bitmap(image1.Width, image1.Height);
@@ -105,6 +121,13 @@ namespace ImageProcessingActEspina
 
         private void button7_Click(object sender, EventArgs e)
         {
+            if (isNormal == false)
+            {
+                MessageBox.Show("PLEASE SELECT A MODE FIRST!");
+                return;
+
+            }
+
             if (pictureBox1.Image != null && image1 != null)
             {
                 image2 = new Bitmap(image1.Width, image1.Height);
@@ -140,6 +163,14 @@ namespace ImageProcessingActEspina
 
         private void button5_Click(object sender, EventArgs e)
         {
+
+            if (isNormal == false)
+            {
+                MessageBox.Show("PLEASE SELECT A MODE FIRST!");
+                return;
+
+            }
+
             if (pictureBox1.Image != null && image1 != null)
             {
                 image2 = new Bitmap(image1.Width, image1.Height);
@@ -203,6 +234,14 @@ namespace ImageProcessingActEspina
             //             resultImage.SetPixel(x, y, pixel);
             //     }
             // }
+
+            if (isNormal == false)
+            {
+                MessageBox.Show("PLEASE SELECT A MODE FIRST!");
+                return;
+
+            }
+
             if (image1 != null && image2 != null)
             {
                 image3 = new Bitmap(image1.Width, image1.Height);
@@ -306,9 +345,21 @@ namespace ImageProcessingActEspina
             //in here i added a webcam mode using the new files i added DeviceManager and Device.cs make all my features adapt to the weva
         }
 
+        private void option1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            isNormal = true;
+        }
+
         private void button6_Click(object sender, EventArgs e)
         {
-           if (pictureBox1.Image != null && image1 != null)
+            if (isNormal == false)
+            {
+                MessageBox.Show("PLEASE SELECT A MODE FIRST!");
+                return;
+
+            }
+
+            if (pictureBox1.Image != null && image1 != null)
 {
     image2 = new Bitmap(image1.Width, image1.Height);
     for (int y = 0; y < image1.Height; y++)
