@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using WebCamLib;
+
 
 namespace ImageProcessingActEspina
 {
@@ -17,6 +19,9 @@ namespace ImageProcessingActEspina
 
         private Bitmap image1, image2, image3;
         private bool isNormal = false;
+        private bool isWebcam = false;
+        private bool webcamActive = false;
+        private Device webcamDevice = null;
 
         public Form1()
         {
@@ -73,18 +78,18 @@ namespace ImageProcessingActEspina
 
         private void button4_Click(object sender, EventArgs e)
         {
-            if(isNormal == false)
+            if(isNormal == false && isWebcam == false)
             {
                 MessageBox.Show("PLEASE SELECT A MODE FIRST!");
                 return;
               
-            }
-
-            if (pictureBox1.Image != null && image1 != null)
+            }else if (pictureBox1.Image != null && image1 != null && isNormal == true)
             {
                 image2 = new Bitmap(image1.Width, image1.Height);
-                for (int y = 0; y < image1.Height; y++) { 
-                    for (int x = 0; x < image1.Width; x++) {
+                for (int y = 0; y < image1.Height; y++)
+                {
+                    for (int x = 0; x < image1.Width; x++)
+                    {
                         Color pixelColor = image1.GetPixel(x, y);
                         image2.SetPixel(x, y, pixelColor);
                     }
@@ -342,7 +347,37 @@ namespace ImageProcessingActEspina
 
         private void option2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //in here i added a webcam mode using the new files i added DeviceManager and Device.cs make all my features adapt to the weva
+if (!webcamActive)
+    {
+        // Turn webcam ON
+        isWebcam = true;
+        Device[] devices = DeviceManager.GetAllDevices();
+        if (devices.Length > 0)
+        {
+            webcamDevice = devices[0]; // Select the first webcam
+            webcamDevice.ShowWindow(pictureBox1);
+            webcamActive = true;
+        }
+        else
+        {
+            MessageBox.Show("No webcam devices found.");
+        }
+    }
+    else
+    {
+        // Turn webcam OFF
+        if (webcamDevice != null)
+        {
+            webcamDevice.Stop();
+            webcamDevice = null;
+        }
+        isWebcam = false;
+        webcamActive = false;
+    }
+    // Update menu item text to match status
+    option2ToolStripMenuItem.Text = webcamActive ? "Turn Webcam OFF" : "Turn Webcam ON";
+
+
         }
 
         private void option1ToolStripMenuItem_Click(object sender, EventArgs e)
