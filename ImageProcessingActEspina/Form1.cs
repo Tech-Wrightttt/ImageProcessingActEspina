@@ -4,9 +4,11 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace ImageProcessingActEspina
 {
@@ -177,8 +179,131 @@ namespace ImageProcessingActEspina
                 pictureBox2.Image = Image.FromFile(fileDialog.FileName);
                 pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
 
-                image1 = new Bitmap(fileDialog.FileName);
+                image2 = new Bitmap(fileDialog.FileName);
             }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            // Color mygreen = Color.FromArgb(0, 0, 255);
+            // int greygreen = (mygreen.R + mygreen.G + mygreen.B) / 3;
+            // int threshold = 5;
+
+            // for (int x = 0; x < imageB.Width; x++)
+            // {
+            //     for (int y = 0; y < imageB.Height; y++)
+            //     {
+            //         Color pixel = imageB.GetPixel(x, y);
+            //         Color backpixel = imageA.GetPixel(x, y);
+            //         int grey = (pixel.R + pixel.G + pixel.B) / 3;
+            //         int subtractvalue = Math.Abs(grey - greygreen);
+            //         if (subtractvalue > threshold)
+            //             resultImage.SetPixel(x, y, backpixel);
+            //         else
+            //             resultImage.SetPixel(x, y, pixel);
+            //     }
+            // }
+            if (image1 != null && image2 != null)
+            {
+                image3 = new Bitmap(image1.Width, image1.Height);
+
+                int threshold = 60; // adjust for green sensitivity
+
+                for (int x = 0; x < image1.Width; x++)
+                {
+                    for (int y = 0; y < image1.Height; y++)
+                    {
+                        Color fgPixel = image1.GetPixel(x, y); // foreground with green screen
+                        Color bgPixel = image2.GetPixel(x, y); // background
+
+                        bool isGreenScreenPixel = fgPixel.G > threshold &&
+                                                  fgPixel.G > fgPixel.R * 1.5 &&
+                                                  fgPixel.G > fgPixel.B * 1.5;
+
+
+                        //ALTHOUGH THE LOGIC PROVIDED IN THE ONE NOTE IS CORRECT I DECIDED TO CHANGE IT BECAUSE ITS TOO SIMPLISTIC AND WONT 
+                        //ACCOUNT FOR LIGHTING
+                        //i know we are using greygreen and grayscale so that we can compare using the brightness but i just like this better sir i hope you dont mind
+
+                        if (isGreenScreenPixel)
+                            image3.SetPixel(x, y, bgPixel);  // replace green with background
+                        else
+                            image3.SetPixel(x, y, fgPixel);
+                    }
+                }
+
+                pictureBox3.Image = image3;
+                pictureBox3.SizeMode = PictureBoxSizeMode.Zoom;
+
+
+
+
+            }
+            else
+            {
+                MessageBox.Show("Please load an image first!");
+            }
+                
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            pictureBox1.Image = null;
+            image1 = null;
+
+
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            pictureBox2.Image = null;
+            image2 = null;
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            pictureBox3.Image = null;
+            image3 = null;
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.InitialDirectory = @"C:\Users\Ruhmer Jairus\Documents";
+                saveFileDialog.Filter = "PNG files (*.png)|*.png";
+                saveFileDialog.DefaultExt = "png";
+                saveFileDialog.FileName = "myimage"; // default name
+
+
+                //note to self use savefiledialog if u want automatic saving
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    image3.Save(saveFileDialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                }
+            }
+        }
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.InitialDirectory = @"C:\Users\Ruhmer Jairus\Documents";
+                saveFileDialog.Filter = "PNG files (*.png)|*.png";
+                saveFileDialog.DefaultExt = "png";
+                saveFileDialog.FileName = "myimage"; // default name
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    image2.Save(saveFileDialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                }
+            }
+        }
+
+        private void option2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //in here i added a webcam mode using the new files i added DeviceManager and Device.cs make all my features adapt to the weva
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -197,7 +322,6 @@ namespace ImageProcessingActEspina
         }
     }
 
-    // FIX 1: Change from 255 to 256 to include all gray levels (0-255)
     int[] histogram = new int[256];
     
     for(int i = 0; i < histogram.Length; i++)
@@ -224,10 +348,10 @@ namespace ImageProcessingActEspina
 
     using (Graphics g = Graphics.FromImage(histogramGraph))
     {
-        // Fill background
+
         g.Clear(Color.White);
 
-        // Find maximum count for scaling
+   
         int maxCount = 0;
         for (int i = 0; i < 256; i++)
         {
@@ -235,12 +359,11 @@ namespace ImageProcessingActEspina
                 maxCount = histogram[i];
         }
 
-        // Draw axes
         Pen axisPen = new Pen(Color.Black, 2);
         g.DrawLine(axisPen, 40, height - 40, width - 20, height - 40); // X-axis
         g.DrawLine(axisPen, 40, height - 40, 40, 20); // Y-axis
 
-        // Draw histogram bars
+   
         Pen barPen = new Pen(Color.Blue, 1);
         Brush barBrush = new SolidBrush(Color.LightBlue);
 
@@ -254,30 +377,29 @@ namespace ImageProcessingActEspina
                 float x = 40 + (i * barWidth);
                 float y = height - 40 - barHeight;
 
-                // Draw bar
+         
                 g.FillRectangle(barBrush, x, y, barWidth, barHeight);
                 g.DrawRectangle(barPen, x, y, barWidth, barHeight);
             }
         }
 
-        // Draw labels
+     
         Font labelFont = new Font("Arial", 8);
         Brush textBrush = new SolidBrush(Color.Black);
 
-        // X-axis labels
         g.DrawString("0", labelFont, textBrush, 40, height - 30);
         g.DrawString("128", labelFont, textBrush, 40 + (128 * barWidth), height - 30);
         g.DrawString("255", labelFont, textBrush, width - 25, height - 30);
 
-        // Axis labels
+
         g.DrawString("Pixel Count", labelFont, textBrush, 10, height / 2);
         g.DrawString("Gray Level", labelFont, textBrush, width / 2 - 30, height - 20);
 
-        // Title
+  
         Font titleFont = new Font("Arial", 10, FontStyle.Bold);
         g.DrawString("Grayscale Histogram", titleFont, textBrush, width / 2 - 60, 5);
 
-        // Clean up
+
         axisPen.Dispose();
         barPen.Dispose();
         barBrush.Dispose();
@@ -289,7 +411,7 @@ namespace ImageProcessingActEspina
     pictureBox2.Image = image2;
     pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
 
-    // FIX 4: Display histogram in pictureBox3 
+
     if (pictureBox3 != null)
     {
         pictureBox3.Image = histogramGraph;

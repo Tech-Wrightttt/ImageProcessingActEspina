@@ -45,6 +45,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.button8 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
+            this.button11 = new System.Windows.Forms.Button();
+            this.button12 = new System.Windows.Forms.Button();
+            this.button13 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -57,7 +63,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(574, 397);
+            this.button2.Location = new System.Drawing.Point(438, 397);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(133, 43);
             this.button2.TabIndex = 2;
@@ -77,7 +83,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(130, 397);
+            this.button1.Location = new System.Drawing.Point(12, 397);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(133, 43);
             this.button1.TabIndex = 6;
@@ -148,14 +154,15 @@
             // option1ToolStripMenuItem
             // 
             this.option1ToolStripMenuItem.Name = "option1ToolStripMenuItem";
-            this.option1ToolStripMenuItem.Size = new System.Drawing.Size(202, 26);
+            this.option1ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.option1ToolStripMenuItem.Text = "NORMAL MODE";
             // 
             // option2ToolStripMenuItem
             // 
             this.option2ToolStripMenuItem.Name = "option2ToolStripMenuItem";
-            this.option2ToolStripMenuItem.Size = new System.Drawing.Size(202, 26);
+            this.option2ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.option2ToolStripMenuItem.Text = "WEBCAM MODE";
+            this.option2ToolStripMenuItem.Click += new System.EventHandler(this.option2ToolStripMenuItem_Click);
             // 
             // menuStrip1
             // 
@@ -196,11 +203,77 @@
             this.pictureBox3.TabIndex = 15;
             this.pictureBox3.TabStop = false;
             // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(290, 547);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(133, 43);
+            this.button8.TabIndex = 16;
+            this.button8.Text = "SUBTRACT";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(275, 397);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(133, 43);
+            this.button9.TabIndex = 17;
+            this.button9.Text = "REMOVE IMAGE";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(701, 397);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(133, 43);
+            this.button10.TabIndex = 18;
+            this.button10.Text = "REMOVE IMAGE";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(864, 397);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(133, 43);
+            this.button11.TabIndex = 19;
+            this.button11.Text = "REMOVE IMAGE";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
+            // button12
+            // 
+            this.button12.Location = new System.Drawing.Point(1127, 397);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(133, 43);
+            this.button12.TabIndex = 20;
+            this.button12.Text = "SAVE IMAGE";
+            this.button12.UseVisualStyleBackColor = true;
+            this.button12.Click += new System.EventHandler(this.button12_Click);
+            // 
+            // button13
+            // 
+            this.button13.Location = new System.Drawing.Point(577, 397);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(118, 43);
+            this.button13.TabIndex = 21;
+            this.button13.Text = "SAVE IMAGE";
+            this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.button13_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1289, 1033);
+            this.Controls.Add(this.button13);
+            this.Controls.Add(this.button12);
+            this.Controls.Add(this.button11);
+            this.Controls.Add(this.button10);
+            this.Controls.Add(this.button9);
+            this.Controls.Add(this.button8);
             this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.label1);
@@ -245,6 +318,12 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox3;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.Button button13;
     }
 }
 
