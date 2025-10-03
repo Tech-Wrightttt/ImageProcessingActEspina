@@ -41,14 +41,14 @@ namespace ImageProcessingActEspina
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (isNormal == false)
+            if (isNormal == false && isWebcam ==false)
             {
                 MessageBox.Show("PLEASE SELECT A MODE FIRST!");
                 return;
 
             }
 
-            if (pictureBox1.Image != null && image1 != null)
+            if (pictureBox1.Image != null && image1 != null && isNormal == true)
             {
                 image2 = new Bitmap(image1.Width, image1.Height);
                 for (int y = 0; y < image1.Height; y++)
@@ -70,6 +70,45 @@ namespace ImageProcessingActEspina
                 pictureBox2.Image = image2;
                 pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
 
+            }else if(isWebcam == true)
+            {
+                System.Windows.Forms.Timer webcamTimer = new System.Windows.Forms.Timer();
+                webcamTimer.Interval = 30; // ~30 FPS
+
+                webcamTimer.Tick += (s, ev) =>
+                {
+                    if (webcamDevice == null)
+                        return;
+
+                    Device d = webcamDevice;
+                    d.Sendmessage();
+                    IDataObject data = Clipboard.GetDataObject();
+                    if (data != null && data.GetDataPresent("System.Drawing.Bitmap", true))
+                    {
+                        Image bmap = (Image)data.GetData("System.Drawing.Bitmap", true);
+                        Bitmap b = new Bitmap(bmap);
+
+                        // Inversion per pixel
+                        image2 = new Bitmap(b.Width, b.Height);
+                        for (int y = 0; y < b.Height; y++)
+                        {
+                            for (int x = 0; x < b.Width; x++)
+                            {
+                                Color pixelColor = b.GetPixel(x, y);
+                                int InversionValue1 = 255 - pixelColor.R;
+                                int InversionValue2 = 255 - pixelColor.G;
+                                int InversionValue3 = 255 - pixelColor.B;
+                                Color newColor = Color.FromArgb(InversionValue1, InversionValue2, InversionValue3);
+                                image2.SetPixel(x, y, newColor);
+                            }
+                        }
+                        pictureBox2.Image = image2;
+                        pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage; // Fill the box edge-to-edge
+                    }
+                };
+
+                webcamTimer.Start();
+                MessageBox.Show("Webcam real-time invert started. Close the form or stop webcam to end.");
             }
             else
             {
@@ -174,14 +213,14 @@ namespace ImageProcessingActEspina
 
         private void button7_Click(object sender, EventArgs e)
         {
-            if (isNormal == false)
+            if (isNormal == false && isWebcam == false)
             {
                 MessageBox.Show("PLEASE SELECT A MODE FIRST!");
                 return;
 
             }
 
-            if (pictureBox1.Image != null && image1 != null)
+            if (pictureBox1.Image != null && image1 != null && isNormal == true)
             {
                 image2 = new Bitmap(image1.Width, image1.Height);
                 for (int y = 0; y < image1.Height; y++)
@@ -207,6 +246,50 @@ namespace ImageProcessingActEspina
                 pictureBox2.Image = image2;
                 pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
 
+            }else if(isWebcam == true)
+            {
+                System.Windows.Forms.Timer webcamTimer = new System.Windows.Forms.Timer();
+                webcamTimer.Interval = 30; // ~30 FPS
+
+                webcamTimer.Tick += (s, ev) =>
+                {
+                    if (webcamDevice == null)
+                        return;
+
+                    Device d = webcamDevice;
+                    d.Sendmessage();
+                    IDataObject data = Clipboard.GetDataObject();
+                    if (data != null && data.GetDataPresent("System.Drawing.Bitmap", true))
+                    {
+                        Image bmap = (Image)data.GetData("System.Drawing.Bitmap", true);
+                        Bitmap b = new Bitmap(bmap);
+
+                        // Sepia conversion
+                        image2 = new Bitmap(b.Width, b.Height);
+                        for (int y = 0; y < b.Height; y++)
+                        {
+                            for (int x = 0; x < b.Width; x++)
+                            {
+                                Color pixelColor = b.GetPixel(x, y);
+                                int SepiaR = (int)((pixelColor.R * 0.393) + (pixelColor.G * 0.769) + (pixelColor.B * 0.189));
+                                int SepiaG = (int)((pixelColor.R * 0.349) + (pixelColor.G * 0.686) + (pixelColor.B * 0.168));
+                                int SepiaB = (int)((pixelColor.R * 0.272) + (pixelColor.G * 0.534) + (pixelColor.B * 0.131));
+
+                                SepiaR = Math.Min(255, Math.Max(0, SepiaR));
+                                SepiaG = Math.Min(255, Math.Max(0, SepiaG));
+                                SepiaB = Math.Min(255, Math.Max(0, SepiaB));
+
+                                Color newColor = Color.FromArgb(SepiaR, SepiaG, SepiaB);
+                                image2.SetPixel(x, y, newColor);
+                            }
+                        }
+                        pictureBox2.Image = image2;
+                        pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage; // Fill the box edge-to-edge
+                    }
+                };
+
+                webcamTimer.Start();
+                MessageBox.Show("Webcam real-time sepia started. Close the form or stop webcam to end.");
             }
             else
             {
@@ -217,14 +300,14 @@ namespace ImageProcessingActEspina
         private void button5_Click(object sender, EventArgs e)
         {
 
-            if (isNormal == false)
+            if (isNormal == false && isWebcam == false)
             {
                 MessageBox.Show("PLEASE SELECT A MODE FIRST!");
                 return;
 
             }
 
-            if (pictureBox1.Image != null && image1 != null)
+            if (pictureBox1.Image != null && image1 != null && isNormal == true)
             {
                 image2 = new Bitmap(image1.Width, image1.Height);
                 for (int y = 0; y < image1.Height; y++)
@@ -245,6 +328,47 @@ namespace ImageProcessingActEspina
 
                 pictureBox2.Image = image2;
                 pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+
+            }else if(isWebcam == true)
+            {
+                System.Windows.Forms.Timer webcamTimer = new System.Windows.Forms.Timer();
+                webcamTimer.Interval = 30; // ~30 FPS
+
+                webcamTimer.Tick += (s, ev) =>
+                {
+                    if (webcamDevice == null)
+                        return;
+
+                    Device d = webcamDevice;
+                    d.Sendmessage();
+                    IDataObject data = Clipboard.GetDataObject();
+                    if (data != null && data.GetDataPresent("System.Drawing.Bitmap", true))
+                    {
+                        Image bmap = (Image)data.GetData("System.Drawing.Bitmap", true);
+                        Bitmap b = new Bitmap(bmap);
+
+                        // Grayscale conversion
+                        image2 = new Bitmap(b.Width, b.Height);
+                        for (int y = 0; y < b.Height; y++)
+                        {
+                            for (int x = 0; x < b.Width; x++)
+                            {
+                                Color pixelColor = b.GetPixel(x, y);
+                                int grayvalue = (pixelColor.R + pixelColor.G + pixelColor.B) / 3;
+                                Color newColor = Color.FromArgb(grayvalue, grayvalue, grayvalue);
+                                image2.SetPixel(x, y, newColor);
+                            }
+                        }
+                        pictureBox2.Image = image2;
+                        pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage; // Fill the box
+                    }
+                };
+
+                webcamTimer.Start();
+                MessageBox.Show("Webcam real-time grayscale started. Close the form or stop webcam to end.");
+
+
+
 
             }
             else
@@ -365,7 +489,7 @@ namespace ImageProcessingActEspina
                 saveFileDialog.InitialDirectory = @"C:\Users\Ruhmer Jairus\Documents";
                 saveFileDialog.Filter = "PNG files (*.png)|*.png";
                 saveFileDialog.DefaultExt = "png";
-                saveFileDialog.FileName = "myimage"; // default name
+                saveFileDialog.FileName = ""; // default name
 
 
                 //note to self use savefiledialog if u want automatic saving
@@ -384,7 +508,7 @@ namespace ImageProcessingActEspina
                 saveFileDialog.InitialDirectory = @"C:\Users\Ruhmer Jairus\Documents";
                 saveFileDialog.Filter = "PNG files (*.png)|*.png";
                 saveFileDialog.DefaultExt = "png";
-                saveFileDialog.FileName = "myimage"; // default name
+                saveFileDialog.FileName = ""; // default name
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -435,7 +559,7 @@ if (!webcamActive)
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if (isNormal == false)
+            if (isNormal == false && isWebcam == false)
             {
                 MessageBox.Show("PLEASE SELECT A MODE FIRST!");
                 return;
@@ -551,11 +675,113 @@ if (!webcamActive)
         pictureBox3.Image = histogramGraph;
         pictureBox3.SizeMode = PictureBoxSizeMode.Zoom;
     }
-}
+}else if(isWebcam == true)
+            {
+                System.Windows.Forms.Timer webcamTimer = new System.Windows.Forms.Timer();
+                webcamTimer.Interval = 30; // ~30 FPS
+
+                webcamTimer.Tick += (s, ev) =>
+                {
+                    if (webcamDevice == null)
+                        return;
+
+                    Device d = webcamDevice;
+                    d.Sendmessage();
+                    IDataObject data = Clipboard.GetDataObject();
+                    if (data != null && data.GetDataPresent("System.Drawing.Bitmap", true))
+                    {
+                        Image bmap = (Image)data.GetData("System.Drawing.Bitmap", true);
+                        Bitmap b = new Bitmap(bmap);
+
+                        // Grayscale conversion
+                        image2 = new Bitmap(b.Width, b.Height);
+                        for (int y = 0; y < b.Height; y++)
+                        {
+                            for (int x = 0; x < b.Width; x++)
+                            {
+                                Color pixelColor = b.GetPixel(x, y);
+                                int grayvalue = (pixelColor.R + pixelColor.G + pixelColor.B) / 3;
+                                Color newColor = Color.FromArgb(grayvalue, grayvalue, grayvalue);
+                                image2.SetPixel(x, y, newColor);
+                            }
+                        }
+
+                        // Build histogram from grayscale
+                        int[] histogram = new int[256];
+                        for (int i = 0; i < histogram.Length; i++) histogram[i] = 0;
+                        for (int y = 0; y < image2.Height; y++)
+                        {
+                            for (int x = 0; x < image2.Width; x++)
+                            {
+                                Color pixelColor = image2.GetPixel(x, y);
+                                int grayLevel = pixelColor.R;
+                                histogram[grayLevel]++;
+                            }
+                        }
+
+                        // Draw histogram
+                        int width = 400, height = 400;
+                        Bitmap histogramGraph = new Bitmap(width, height);
+
+                        using (Graphics g = Graphics.FromImage(histogramGraph))
+                        {
+                            g.Clear(Color.White);
+                            int maxCount = histogram.Max();
+                            Pen axisPen = new Pen(Color.Black, 2);
+                            g.DrawLine(axisPen, 40, height - 40, width - 20, height - 40); // X-axis
+                            g.DrawLine(axisPen, 40, height - 40, 40, 20); // Y-axis
+                            Pen barPen = new Pen(Color.Blue, 1);
+                            Brush barBrush = new SolidBrush(Color.LightBlue);
+
+                            float barWidth = (width - 60) / 256f;
+                            for (int i = 0; i < 256; i++)
+                            {
+                                if (histogram[i] > 0)
+                                {
+                                    float barHeight = ((float)histogram[i] / maxCount) * (height - 80);
+                                    float x = 40 + (i * barWidth);
+                                    float y = height - 40 - barHeight;
+                                    g.FillRectangle(barBrush, x, y, barWidth, barHeight);
+                                    g.DrawRectangle(barPen, x, y, barWidth, barHeight);
+                                }
+                            }
+
+                            Font labelFont = new Font("Arial", 8);
+                            Brush textBrush = new SolidBrush(Color.Black);
+                            g.DrawString("0", labelFont, textBrush, 40, height - 30);
+                            g.DrawString("128", labelFont, textBrush, 40 + (128 * barWidth), height - 30);
+                            g.DrawString("255", labelFont, textBrush, width - 25, height - 30);
+                            g.DrawString("Pixel Count", labelFont, textBrush, 10, height / 2);
+                            g.DrawString("Gray Level", labelFont, textBrush, width / 2 - 30, height - 20);
+                            Font titleFont = new Font("Arial", 10, FontStyle.Bold);
+                            g.DrawString("Grayscale Histogram", titleFont, textBrush, width / 2 - 60, 5);
+
+                            axisPen.Dispose();
+                            barPen.Dispose();
+                            barBrush.Dispose();
+                            labelFont.Dispose();
+                            textBrush.Dispose();
+                            titleFont.Dispose();
+                        }
+
+                        pictureBox2.Image = image2;
+                        pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+
+                        if (pictureBox3 != null)
+                        {
+                            pictureBox3.Image = histogramGraph;
+                            pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
+                        }
+                    }
+                };
+
+                webcamTimer.Start();
+                MessageBox.Show("Webcam real-time grayscale+histogram started. Close the form or stop webcam to end.");
+            }
 else
-{
-    MessageBox.Show("Please load an image first!");
-}
+            {
+                MessageBox.Show("Please load an image first!");
+            }
         }
 
 
