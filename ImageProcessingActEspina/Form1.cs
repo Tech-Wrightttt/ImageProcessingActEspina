@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using WebCamLib;
+using ConVMatrix;
 
 
 namespace ImageProcessingActEspina
@@ -27,6 +28,7 @@ namespace ImageProcessingActEspina
         public Form1()
         {
             InitializeComponent();
+            this.Text = "Image Processing Lab";
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -617,6 +619,359 @@ if (!webcamActive)
         {
             isNormal = true;
         }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void button17_Click(object sender, EventArgs e)
+        {
+            if (!isNormal && !isWebcam)
+            {
+                MessageBox.Show("PLEASE SELECT A MODE FIRST!");
+                return;
+            }
+
+            if (pictureBox1.Image != null && image1 != null && isNormal)
+            {
+                // Sharpen kernel setup
+                ConvMatrix m = new ConvMatrix();
+                m.TopLeft = 0; m.TopMid = -2; m.TopRight = 0;
+                m.MidLeft = -2; m.Pixel = 11; m.MidRight = -2;
+                m.BottomLeft = 0; m.BottomMid = -2; m.BottomRight = 0;
+                m.Factor = 3;
+                m.Offset = 0;
+
+                image2 = (Bitmap)image1.Clone();
+                for (int i = 0; i < 3; i++)
+                    ConVMatrix.Convolution.Conv3x3(image2, m);
+
+
+                pictureBox2.Image = image2;
+                pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            }
+            else if (isWebcam)
+            {
+                System.Windows.Forms.Timer webcamTimer = new System.Windows.Forms.Timer();
+                webcamTimer.Interval = 30;
+
+                webcamTimer.Tick += (s, ev) =>
+                {
+                    if (webcamDevice == null)
+                        return;
+
+                    Device d = webcamDevice;
+                    d.Sendmessage();
+                    IDataObject data = Clipboard.GetDataObject();
+                    if (data != null && data.GetDataPresent("System.Drawing.Bitmap", true))
+                    {
+                        Image bmap = (Image)data.GetData("System.Drawing.Bitmap", true);
+                        Bitmap b = new Bitmap(bmap);
+
+                        ConvMatrix m = new ConvMatrix();
+                        m.TopLeft = 0; m.TopMid = -5; m.TopRight = 0;
+                        m.MidLeft = -5; m.Pixel = 25; m.MidRight = -5;
+                        m.BottomLeft = 0; m.BottomMid = -5; m.BottomRight = 0;
+                        m.Factor = 5;   // made it stronger but di gyapon klaro lol
+                        m.Offset = 0;
+
+                        image2 = (Bitmap)b.Clone();
+                        for (int i = 0; i < 2; i++)
+                            ConVMatrix.Convolution.Conv3x3(image2, m);
+
+
+                        pictureBox2.Image = image2;
+                        pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+                    }
+                };
+
+                webcamTimer.Start();
+                MessageBox.Show("Webcam real-time sharpen (intensified) started. Close the form or stop webcam to end.");
+
+            }
+            else
+            {
+                MessageBox.Show("Please load an image first!");
+            }
+        }
+
+        private void button15_Click(object sender, EventArgs e)
+        {
+            if (!isNormal && !isWebcam)
+            {
+                MessageBox.Show("PLEASE SELECT A MODE FIRST!");
+                return;
+            }
+
+            if (pictureBox1.Image != null && image1 != null && isNormal)
+            {
+                // Smoothing (mean blur) kernel
+                ConVMatrix.ConvMatrix m = new ConVMatrix.ConvMatrix();
+                m.SetAll(1);
+                m.Pixel = 1;      // Classic box blur (center = 1)
+                m.Factor = 9;     // Sum of all entries for classic box blur
+                m.Offset = 0;
+
+                image2 = (Bitmap)image1.Clone();
+                for (int i = 0; i < 10; i++)
+                    ConVMatrix.Convolution.Conv3x3(image2, m);
+
+
+                pictureBox2.Image = image2;
+                pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            }
+            else if (isWebcam)
+            {
+                System.Windows.Forms.Timer webcamTimer = new System.Windows.Forms.Timer();
+                webcamTimer.Interval = 30;
+
+                webcamTimer.Tick += (s, ev) =>
+                {
+                    if (webcamDevice == null)
+                        return;
+
+                    Device d = webcamDevice;
+                    d.Sendmessage();
+                    IDataObject data = Clipboard.GetDataObject();
+                    if (data != null && data.GetDataPresent("System.Drawing.Bitmap", true))
+                    {
+                        Image bmap = (Image)data.GetData("System.Drawing.Bitmap", true);
+                        Bitmap b = new Bitmap(bmap);
+
+                        ConVMatrix.ConvMatrix m = new ConVMatrix.ConvMatrix();
+                        m.SetAll(1);
+                        m.Pixel = 1;
+                        m.Factor = 9;
+                        m.Offset = 0;
+
+                        image2 = (Bitmap)b.Clone();
+                        for (int i = 0; i < 10; i++)
+                            ConVMatrix.Convolution.Conv3x3(image2, m);
+
+
+                        pictureBox2.Image = image2;
+                        pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+                    }
+                };
+
+                webcamTimer.Start();
+                MessageBox.Show("Webcam real-time smoothing started. Close the form or stop webcam to end.");
+            }
+            else
+            {
+                MessageBox.Show("Please load an image first!");
+            }
+        }
+        private void button16_Click(object sender, EventArgs e)
+        {
+            if (!isNormal && !isWebcam)
+            {
+                MessageBox.Show("PLEASE SELECT A MODE FIRST!");
+                return;
+            }
+
+            if (pictureBox1.Image != null && image1 != null && isNormal)
+            {
+                // Classic 3x3 Gaussian blur kernel
+                ConVMatrix.ConvMatrix m = new ConVMatrix.ConvMatrix();
+                m.TopLeft = 1;
+                m.TopMid = 2;
+                m.TopRight = 1;
+                m.MidLeft = 2;
+                m.Pixel = 4;
+                m.MidRight = 2;
+                m.BottomLeft = 1;
+                m.BottomMid = 2;
+                m.BottomRight = 1;
+                m.Factor = 16;
+                m.Offset = 0;
+
+                image2 = (Bitmap)image1.Clone();
+                for (int i = 0; i < 10; i++)
+                    ConVMatrix.Convolution.Conv3x3(image2, m);
+
+
+                pictureBox2.Image = image2;
+                pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            }
+            else if (isWebcam)
+            {
+                System.Windows.Forms.Timer webcamTimer = new System.Windows.Forms.Timer();
+                webcamTimer.Interval = 30;
+
+                webcamTimer.Tick += (s, ev) =>
+                {
+                    if (webcamDevice == null)
+                        return;
+
+                    Device d = webcamDevice;
+                    d.Sendmessage();
+                    IDataObject data = Clipboard.GetDataObject();
+                    if (data != null && data.GetDataPresent("System.Drawing.Bitmap", true))
+                    {
+                        Image bmap = (Image)data.GetData("System.Drawing.Bitmap", true);
+                        Bitmap b = new Bitmap(bmap);
+
+                        ConVMatrix.ConvMatrix m = new ConVMatrix.ConvMatrix();
+                        m.TopLeft = 1;
+                        m.TopMid = 2;
+                        m.TopRight = 1;
+                        m.MidLeft = 2;
+                        m.Pixel = 4;
+                        m.MidRight = 2;
+                        m.BottomLeft = 1;
+                        m.BottomMid = 2;
+                        m.BottomRight = 1;
+                        m.Factor = 16;
+                        m.Offset = 0;
+
+                        image2 = (Bitmap)b.Clone();
+                        for (int i = 0; i < 10; i++)
+                            ConVMatrix.Convolution.Conv3x3(image2, m);
+
+                        pictureBox2.Image = image2;
+                        pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+                    }
+                };
+
+                webcamTimer.Start();
+                MessageBox.Show("Webcam real-time Gaussian blur started. Close the form or stop webcam to end.");
+            }
+            else
+            {
+                MessageBox.Show("Please load an image first!");
+            }
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            if (!isNormal && !isWebcam)
+            {
+                MessageBox.Show("PLEASE SELECT A MODE FIRST!");
+                return;
+            }
+
+            if (pictureBox1.Image != null && image1 != null && isNormal)
+            {
+                ConVMatrix.ConvMatrix m = new ConVMatrix.ConvMatrix();
+                m.SetAll(-1);
+                m.Pixel = 9;
+                m.Factor = 1;
+                m.Offset = 0;
+
+                image2 = (Bitmap)image1.Clone();
+                    ConVMatrix.Convolution.Conv3x3(image2, m);
+
+                pictureBox2.Image = image2;
+                pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            }
+            else if (isWebcam)
+            {
+                System.Windows.Forms.Timer webcamTimer = new System.Windows.Forms.Timer();
+                webcamTimer.Interval = 30;
+
+                webcamTimer.Tick += (s, ev) =>
+                {
+                    if (webcamDevice == null)
+                        return;
+
+                    Device d = webcamDevice;
+                    d.Sendmessage();
+                    IDataObject data = Clipboard.GetDataObject();
+                    if (data != null && data.GetDataPresent("System.Drawing.Bitmap", true))
+                    {
+                        Image bmap = (Image)data.GetData("System.Drawing.Bitmap", true);
+                        Bitmap b = new Bitmap(bmap);
+
+                        ConVMatrix.ConvMatrix m = new ConVMatrix.ConvMatrix();
+                        m.SetAll(-1);
+                        m.Pixel = 9;
+                        m.Factor = 1;
+                        m.Offset = 0;
+
+                        image2 = (Bitmap)b.Clone();
+                            ConVMatrix.Convolution.Conv3x3(image2, m);
+
+                        pictureBox2.Image = image2;
+                        pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+                    }
+                };
+
+                webcamTimer.Start();
+                MessageBox.Show("Webcam real-time mean removal (5x) started. Close the form or stop webcam to end.");
+            }
+            else
+            {
+                MessageBox.Show("Please load an image first!");
+            }
+        }
+
+        private void button19_Click(object sender, EventArgs e)
+        {
+            if (!isNormal && !isWebcam)
+            {
+                MessageBox.Show("PLEASE SELECT A MODE FIRST!");
+                return;
+            }
+
+            if (pictureBox1.Image != null && image1 != null && isNormal)
+            {
+                // Laplacian emboss kernel
+                ConVMatrix.ConvMatrix m = new ConVMatrix.ConvMatrix();
+                m.TopLeft = -1; m.TopMid = 0; m.TopRight = -1;
+                m.MidLeft = 0; m.Pixel = 4; m.MidRight = 0;
+                m.BottomLeft = -1; m.BottomMid = 0; m.BottomRight = -1;
+                m.Factor = 1;
+                m.Offset = 127; // To shift mid-greys to visible range
+
+                image2 = (Bitmap)image1.Clone();
+                ConVMatrix.Convolution.Conv3x3(image2, m);
+
+                pictureBox2.Image = image2;
+                pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            }
+            else if (isWebcam)
+            {
+                System.Windows.Forms.Timer webcamTimer = new System.Windows.Forms.Timer();
+                webcamTimer.Interval = 30;
+
+                webcamTimer.Tick += (s, ev) =>
+                {
+                    if (webcamDevice == null)
+                        return;
+
+                    Device d = webcamDevice;
+                    d.Sendmessage();
+                    IDataObject data = Clipboard.GetDataObject();
+                    if (data != null && data.GetDataPresent("System.Drawing.Bitmap", true))
+                    {
+                        Image bmap = (Image)data.GetData("System.Drawing.Bitmap", true);
+                        Bitmap b = new Bitmap(bmap);
+
+                        ConVMatrix.ConvMatrix m = new ConVMatrix.ConvMatrix();
+                        m.TopLeft = -1; m.TopMid = 0; m.TopRight = -1;
+                        m.MidLeft = 0; m.Pixel = 4; m.MidRight = 0;
+                        m.BottomLeft = -1; m.BottomMid = 0; m.BottomRight = -1;
+                        m.Factor = 1;
+                        m.Offset = 127;
+
+                        image2 = (Bitmap)b.Clone();
+                        ConVMatrix.Convolution.Conv3x3(image2, m);
+
+                        pictureBox2.Image = image2;
+                        pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+                    }
+                };
+
+                webcamTimer.Start();
+                MessageBox.Show("Webcam real-time emboss started. Close the form or stop webcam to end.");
+            }
+            else
+            {
+                MessageBox.Show("Please load an image first!");
+            }
+        }
+
 
         private void button6_Click(object sender, EventArgs e)
         {
