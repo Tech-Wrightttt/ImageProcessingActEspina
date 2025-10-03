@@ -412,14 +412,14 @@ namespace ImageProcessingActEspina
             //     }
             // }
 
-            if (isNormal == false)
+            if (isNormal == false && isWebcam == false)
             {
                 MessageBox.Show("PLEASE SELECT A MODE FIRST!");
                 return;
 
             }
 
-            if (image1 != null && image2 != null)
+            if (image1 != null && image2 != null && isNormal == true)
             {
                 image3 = new Bitmap(image1.Width, image1.Height);
 
@@ -454,6 +454,67 @@ namespace ImageProcessingActEspina
 
 
 
+            }else if(isWebcam == true && image2 !=null)
+            {
+                System.Windows.Forms.Timer webcamTimer = new System.Windows.Forms.Timer();
+                webcamTimer.Interval = 30; // ~30 FPS
+
+                webcamTimer.Tick += (s, ev) =>
+                {
+                    if (webcamDevice == null || image2 == null)
+                        return; // image2 must hold your background image!
+
+                    Device d = webcamDevice;
+                    d.Sendmessage();
+                    IDataObject data = Clipboard.GetDataObject();
+                    if (data != null && data.GetDataPresent("System.Drawing.Bitmap", true))
+                    {
+                        Image webcamImage = (Image)data.GetData("System.Drawing.Bitmap", true);
+                        Bitmap webcamFrame = new Bitmap(webcamImage);
+
+                        int width = Math.Min(webcamFrame.Width, image2.Width);
+                        int height = Math.Min(webcamFrame.Height, image2.Height);
+
+                        image3 = new Bitmap(width, height);
+
+                        // --- CHROMA KEY TUNING PARAMETERS ---
+                        int greenMin = 80;        // Minimum green to be considered screen
+                        int redMax = 100;        // Max red value to allow as green
+                        int blueMax = 100;        // Max blue value to allow as green
+                        int fuzz = 40;         // Green must exceed R/B by at least this much
+                                               // ------------------------------------
+
+                        for (int x = 0; x < width; x++)
+                        {
+                            for (int y = 0; y < height; y++)
+                            {
+                                Color fgPixel = webcamFrame.GetPixel(x, y);
+                                Color bgPixel = image2.GetPixel(x, y);
+
+                                int r = fgPixel.R;
+                                int g = fgPixel.G;
+                                int b = fgPixel.B;
+
+                                bool isGreenScreenPixel =
+                                    g > greenMin &&
+                                    r < redMax &&
+                                    b < blueMax &&
+                                    (g - Math.Max(r, b)) > fuzz;
+
+                                if (isGreenScreenPixel)
+                                    image3.SetPixel(x, y, bgPixel); // Replace green with background
+                                else
+                                    image3.SetPixel(x, y, fgPixel); // Keep original pixel
+                            }
+                        }
+
+                        pictureBox3.Image = image3;
+                        pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage; // Fill the output box
+                    }
+                };
+
+                webcamTimer.Start();
+                MessageBox.Show("Webcam real-time green screen started. Adjust tuning values for best results! Close form or stop webcam to end.");
             }
             else
             {
