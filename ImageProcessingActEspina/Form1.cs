@@ -23,6 +23,7 @@ namespace ImageProcessingActEspina
         private bool webcamActive = false;
         private Device webcamDevice = null;
 
+
         public Form1()
         {
             InitializeComponent();
@@ -78,12 +79,13 @@ namespace ImageProcessingActEspina
 
         private void button4_Click(object sender, EventArgs e)
         {
-            if(isNormal == false && isWebcam == false)
+            if (isNormal == false && isWebcam == false)
             {
                 MessageBox.Show("PLEASE SELECT A MODE FIRST!");
                 return;
-              
-            }else if (pictureBox1.Image != null && image1 != null && isNormal == true)
+
+            }
+            else if (pictureBox1.Image != null && image1 != null && isNormal == true)
             {
                 image2 = new Bitmap(image1.Width, image1.Height);
                 for (int y = 0; y < image1.Height; y++)
@@ -99,11 +101,57 @@ namespace ImageProcessingActEspina
                 pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
 
             }
+            else if (isWebcam == true)
+            {
+                System.Windows.Forms.Timer webcamTimer = new System.Windows.Forms.Timer();
+                webcamTimer.Interval = 30; // ~30 FPS
+
+                webcamTimer.Tick += (s, ev) =>
+                {
+                    if (webcamDevice == null)
+                        return; // Safeguard: device must exist
+
+                    Device d = webcamDevice;
+                    try
+                    {
+                        d.Sendmessage();
+
+                        IDataObject data = Clipboard.GetDataObject();
+                        if (data == null)
+                            return; // Clipboard API failed
+
+                        if (data.GetDataPresent("System.Drawing.Bitmap", true))
+                        {
+                            object imgObj = data.GetData("System.Drawing.Bitmap", true);
+                            if (imgObj != null)
+                            {
+                                Image bmap = (Image)imgObj;
+                                Bitmap b = new Bitmap(bmap);
+
+                                image2 = b;
+                                pictureBox2.Image = image2;
+                                pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Optionally log or handle errors (avoid crash)
+                        Console.WriteLine("Webcam copy error: " + ex.Message);
+                    }
+                };
+
+                webcamTimer.Start();
+                MessageBox.Show("Webcam real-time copy started. Close the form or stop webcam to end.");
+            }
+
+
             else
             {
-                MessageBox.Show("Please load an image first!");
+                    MessageBox.Show("Please load an image first!");
+                }
             }
-        }
+        
         private void newImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
